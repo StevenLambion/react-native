@@ -391,7 +391,10 @@ BOOL RCTIsUIManagerQueue()
   NSNumber *reactTag = view.reactTag;
   dispatch_async(RCTGetUIManagerQueue(), ^{
     RCTShadowView *shadowView = self->_shadowViewRegistry[reactTag];
-    RCTAssert(shadowView != nil, @"Could not locate view with tag #%@", reactTag);
+    if (shadowView == nil) {
+      RCTLogWarn(@"Could not locate shadow view with tag #%@, this is probably caused by a temporary inconsistency between native views and shadow views.", reactTag);
+      return;
+    }    
 
     if (!CGSizeEqualToSize(shadowView.intrinsicContentSize, size)) {
       shadowView.intrinsicContentSize = size;
